@@ -6,7 +6,7 @@
 #    By: numussan <numussan@student.42abudhabi.a    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/20 15:33:15 by numussan          #+#    #+#              #
-#    Updated: 2022/08/06 19:39:53 by numussan         ###   ########.fr        #
+#    Updated: 2022/08/20 23:32:33 by numussan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ CLIENT_OBJS		=	$(CLIENT_SRC:.c=.o)
 
 OBJS			=	$(CLIENT_OBJS) $(SERVER_OBJS)
 
+
 SERVER_SRC_B	=	server_bonus.c
 
 CLIENT_SRC_B	=	client_bonus.c
@@ -32,53 +33,53 @@ CLIENT_OBJS_B	=	$(CLIENT_SRC_B:.c=.o)
 
 OBJS_B			=	$(CLIENT_OBJS_B) $(SERVER_OBJS_B)
 
+
 CCF				=	gcc -Wall -Wextra -Werror
 
 RM				=	rm -rf
 
-SERVER_NAME		=	server
-
-CLIENT_NAME		=	client
-
-SERVER_NAME_B	=	server_bonus
-
-CLIENT_NAME_B	=	client_bonus
-
 LIBFT			=	cd libft && make
+PRINTF			=	cd ft_printf && make
 
-LIB				=	libft/libft.a
+LIB1			=	libft/libft.a
+LIB2			=	ft_printf/libftprintf.a
 
 
 all: $(NAME)
 
-$(NAME): connecting_libft server_startup client_launch
+$(NAME): connecting_libft connecting_printf server_startup client_launch
 
-bonus: comp_start ft_server_bonus ft_client_bonus
+bonus: connecting_libft connecting_printf server_bonus_startup client_bonus_launch
 
 connecting_libft:
 	@$(LIBFT)
 
+connecting_printf:
+	@$(PRINTF)
+
 server_startup: $(SERVER_OBJS)
-	@$(CCF) $(SERVER_OBJS) $(LIB) -o $(SERVER_NAME)
+	@$(CCF) $(SERVER_OBJS) $(LIB1) $(LIB2) -o server
 
 client_launch: $(CLIENT_OBJS)
-	@$(CCF) $(CLIENT_OBJS) $(LIB) -o $(CLIENT_NAME)
+	@$(CCF) $(CLIENT_OBJS) $(LIB1) -o client
 
-ft_server_bonus: $(SERVER_OBJS_B)
-	@$(CCF) $(SERVER_OBJS_B) $(LIB) -o $(SERVER_NAME_B)
+server_bonus_startup: $(SERVER_OBJS_B)
+	@$(CCF) $(SERVER_OBJS_B) $(LIB1) $(LIB2) -o server_bonus
 
-ft_client_bonus: $(CLIENT_OBJS_B)
-	@$(CCF) $(CLIENT_OBJS_B) $(LIB) -o $(CLIENT_NAME_B)
+client_bonus_launch: $(CLIENT_OBJS_B)
+	@$(CCF) $(CLIENT_OBJS_B) $(LIB1) -o client_bonus
 
 clean:
 	@$(RM) $(OBJS)
 	@$(RM) $(OBJS_B)
-	@cd libft && make clean
+	@$(LIBFT) clean
+	@$(PRINTF) clean
 
 fclean: clean
-	@$(RM) $(SERVER_NAME) $(CLIENT_NAME)
-	@$(RM) $(SERVER_NAME_B) $(CLIENT_NAME_B)
-	@cd libft && make fclean
+	@$(RM) server client
+	@$(RM) server_bonus client_bonus
+	@$(LIBFT) fclean
+	@$(PRINTF) fclean
 
 .c.o:
 	@$(CCF) -I include -c $< -o ${<:.c=.o}
